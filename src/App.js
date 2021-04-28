@@ -1,5 +1,5 @@
-import React, {Component} from 'react';
-import {v4} from 'uuid'
+import React, { Component } from 'react';
+import { v4 } from 'uuid'
 
 import styles from './App.module.css'
 
@@ -9,27 +9,33 @@ import ContactList from './components/ContactList'
 
 class App extends Component {
     state = {
-        contacts: [
-            {id: 'id-1', name: 'Rosie Simpson', number: '459-12-56'},
-            {id: 'id-2', name: 'Hermione Kline', number: '443-89-12'},
-            {id: 'id-3', name: 'Eden Clements', number: '645-17-79'},
-            {id: 'id-4', name: 'Annie Copeland', number: '227-91-26'},
-        ],
+        contacts: [],
         filter: "",
         errorMessage: ""
     }
 
-    addContact = ({name, number}) => {
-        
-        this.setState(({contacts}) => {
+    componentDidMount() {
+        const contactList = JSON.parse(localStorage.getItem('contacts'));
+        this.setState({ contacts: contactList })
+    }
+
+    componentDidUpdate() {
+        const { contacts } = this.state;
+        const contactList = JSON.stringify(contacts);
+        localStorage.setItem('contacts', contactList);
+    }
+
+    addContact = ({ name, number }) => {
+
+        this.setState(({ contacts }) => {
             const contact = contacts.find(contact => contact.name === name || contact.number === number)
-    
-            if(!contact){
+
+            if (!contact) {
                 const newList = [...contacts];
-          
+
                 const newContact = {
                     id: v4(),
-                    name, 
+                    name,
                     number
                 }
                 newList.push(newContact)
@@ -55,7 +61,7 @@ class App extends Component {
     }
 
     handleDelete = (idx) => {
-        this.setState(({contacts})=>{
+        this.setState(({ contacts }) => {
             const newContacts = [...contacts];
             newContacts.splice(idx, 1);
             return {
@@ -66,27 +72,27 @@ class App extends Component {
 
 
     render() {
-        const {addContact, handleFilter, handleDelete} = this;
-        const {filter, contacts, errorMessage} = this.state;
+        const { addContact, handleFilter, handleDelete } = this;
+        const { filter, contacts, errorMessage } = this.state;
 
         const normalizedFilter = filter.toLowerCase();
         const filteredContacts = contacts.filter(contact => contact.name.toLowerCase().includes(normalizedFilter))
 
         return (
-        <div>
-            <h1>Phonebook</h1>
-            <ContactForm onSubmit={addContact} />
-            {errorMessage && <p className={styles.errorMessage}>{errorMessage}</p>}
+            <div>
+                <h1>Phonebook</h1>
+                <ContactForm onSubmit={addContact} />
+                {errorMessage && <p className={styles.errorMessage}>{errorMessage}</p>}
 
-            <h2>Contacts</h2>
-            <Filter filter={filter} onChange={handleFilter}/>
-            <ContactList onClick={handleDelete} contacts={filteredContacts}/>
-        </div>
+                <h2>Contacts</h2>
+                <Filter filter={filter} onChange={handleFilter} />
+                <ContactList onClick={handleDelete} contacts={filteredContacts} />
+            </div>
         )
-        
+
     }
 }
 
 
- 
+
 export default App;
