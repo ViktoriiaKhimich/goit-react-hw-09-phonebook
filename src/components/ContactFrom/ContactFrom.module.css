@@ -19,3 +19,7 @@
     margin-bottom: 15px;
 }
 
+.errorMessage {
+    color: red;
+    margin-left: 10px;
+}

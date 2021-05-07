@@ -1,5 +1,9 @@
-import {Component} from 'react';
-import {v4} from 'uuid'
+import { Component } from 'react';
+import { connect } from 'react-redux'
+import { v4 } from 'uuid'
+import actions from '../../redux/actions'
+import FormInput from '../../shared/components/FormInput'
+import { fields } from './fields'
 
 import styles from './ContactFrom.module.css'
 
@@ -7,11 +11,11 @@ class ContactFrom extends Component {
 
     state = {
         name: "",
-        number: ""
+        number: "",
     }
 
     handleChange = (e) => {
-        const {name, value} = e.target;
+        const { name, value } = e.target;
         this.setState({
             [name]: value,
         })
@@ -19,14 +23,19 @@ class ContactFrom extends Component {
 
     handleSubmit = (e) => {
         e.preventDefault();
-        
-        this.props.onSubmit(this.state)
-
+        const { name, number } = this.state;
+        const contact = this.props.contacts.find(item => item.name === name || item.number === number)
+        if (!contact) {
+            this.props.onSubmit(name, number)
+            this.reset()
+            return
+        }
+        alert(`${name} is already in contacts`)
         this.reset()
 
     }
 
-    reset = () =>  {
+    reset = () => {
         this.setState({
             name: '',
             number: '',
@@ -34,50 +43,33 @@ class ContactFrom extends Component {
     }
 
     render() {
-
         const nameFieldId = v4();
         const numberFieldId = v4();
-
-        const {name, number} = this.state;
-        const {handleChange, handleSubmit } = this;
+        const { name, number } = this.state;
+        const { handleChange, handleSubmit } = this;
         return (
             <>
-            <form className={styles.form} onSubmit={handleSubmit}>
-                <div className={styles.formInput}>
-                <label htmlFor={nameFieldId}>Name</label>
-                <input
-                    className={styles.formField}
-                    id={nameFieldId}
-                    value={name}
-                    onChange={handleChange}
-                    type="text"
-                    name="name"
-                    pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
-                    title="Имя может состоять только из букв, апострофа, тире и пробелов. Например Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan и т. п."
-                    required
-                />
-                </div>
-
-                <div className={styles.formInput}>
-                <label  htmlFor={numberFieldId}>Number</label>
-                <input
-                    className={styles.formField}
-                    id={numberFieldId}
-                    value={number}
-                    onChange={handleChange}
-                    type="text"
-                    name="number"
-                    pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
-                    title="Номер телефона должен состоять цифр и может содержать пробелы, тире, круглые скобки и может начинаться с +"
-                    required
-                />
-                </div>
-                <button type="submit">Add contact</button>
-            </form>
+                <form className={styles.form} onSubmit={handleSubmit}>
+                    <div className={styles.formInput}>
+                        <label htmlFor={nameFieldId}>Name</label>
+                        <FormInput onChange={handleChange} {...fields.name} value={name} className={styles.formField} />
+                        <label htmlFor={numberFieldId}>Number</label>
+                        <FormInput onChange={handleChange} {...fields.number} value={number} className={styles.formField} />
+                    </div>
+                    <button type="submit">Add contact</button>
+                </form>
             </>
         )
-
     }
 }
 
-export default ContactFrom;
+
+const mapStateToProps = state => ({
+    contacts: state.phonebook.contacts,
+})
+
+const mapDispatchToProps = dispatch => ({
+    onSubmit: (name, number) => dispatch(actions.addContact(name, number)),
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(ContactFrom);
