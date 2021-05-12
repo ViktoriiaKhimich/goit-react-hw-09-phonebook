@@ -2,7 +2,8 @@ import React from 'react';
 import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
 import ContactListItem from '../ContactListItem'
-import actions from '../../redux/actions'
+import operations from '../../redux/operations'
+import { filteredContacts } from '../../redux/selectors'
 
 const ContactList = ({ contacts, onClick }) => {
     const contactElements = contacts.map(({ id, ...props }) => <ContactListItem key={id} {...props} onClick={() => onClick(id)} />)
@@ -21,17 +22,12 @@ ContactList.propTypes = {
     }).isRequired)
 }
 
-const mapStateToProps = (state) => {
-    const { filter, contacts } = state.phonebook;
-    const normalizedFilter = filter.toLowerCase();
-    const filteredContacts = contacts.filter(contact => contact.name.toLowerCase().includes(normalizedFilter))
-    return {
-        contacts: filteredContacts,
-    }
-}
+const mapStateToProps = (state) => ({
+    contacts: filteredContacts(state)
+})
 
 const mapDispatchToPtops = dispatch => ({
-    onClick: (id) => dispatch(actions.deleteContact(id))
+    onClick: (id) => dispatch(operations.deleteContact(id))
 })
 
 export default connect(mapStateToProps, mapDispatchToPtops)(ContactList);

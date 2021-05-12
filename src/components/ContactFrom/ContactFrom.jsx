@@ -1,9 +1,10 @@
 import { Component } from 'react';
 import { connect } from 'react-redux'
-import { v4 } from 'uuid'
-import actions from '../../redux/actions'
+import { getContacts } from '../../redux/selectors'
+import operations from '../../redux/operations'
 import FormInput from '../../shared/components/FormInput'
-import { fields } from './fields'
+import { fields } from './fields';
+import { v4 } from 'uuid'
 
 import styles from './ContactFrom.module.css'
 
@@ -65,11 +66,11 @@ class ContactFrom extends Component {
 
 
 const mapStateToProps = state => ({
-    contacts: state.phonebook.contacts,
+    contacts: getContacts(state),
 })
 
 const mapDispatchToProps = dispatch => ({
-    onSubmit: (name, number) => dispatch(actions.addContact(name, number)),
+    onSubmit: (name, number) => dispatch(operations.addContact(name, number)),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(ContactFrom);
