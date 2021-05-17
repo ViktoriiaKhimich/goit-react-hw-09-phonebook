@@ -1,0 +1,16 @@
+.pageNav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    list-style: none;
+}
+
+.pageNavItem {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 10px;
+    border: 2px solid gray;
+    border-radius: 5px;
+    padding: 10px;
+}

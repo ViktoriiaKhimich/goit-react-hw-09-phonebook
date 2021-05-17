@@ -3,7 +3,7 @@ import actions from './actions'
 
 const { fetchContactsRequest, fetchContactsSuccess, fetchContactsError, addContactRequest, addContactSuccess, addContactError, deleteContactRequest, deleteContactSuccess, deleteContactError } = actions;
 
-axios.defaults.baseURL = 'http://localhost:4040';
+axios.defaults.baseURL = 'https://connections-api.herokuapp.com';
 
 const fetchContacts = () => dispatch => {
     dispatch(fetchContactsRequest())
@@ -11,7 +11,7 @@ const fetchContacts = () => dispatch => {
     axios
         .get('/contacts')
         .then(({ data }) => dispatch(fetchContactsSuccess(data)))
-        .catch(error => dispatch(fetchContactsError(error)))
+        .catch(error => dispatch(fetchContactsError(error.message)))
 }
 
 const addContact = (name, number) => dispatch => {
@@ -22,16 +22,16 @@ const addContact = (name, number) => dispatch => {
     axios
         .post('/contacts', contact)
         .then(({ data }) => dispatch(addContactSuccess(data)))
-        .catch(error => dispatch(addContactError(error)));
+        .catch(error => dispatch(addContactError(error.message)));
 }
 
-const deleteContact = id => dispatch => {
+const deleteContact = contactId => dispatch => {
     dispatch(deleteContactRequest());
 
     axios
-        .delete(`/contacts/${id}`)
-        .then(() => dispatch(deleteContactSuccess(id)))
-        .catch(error => dispatch(deleteContactError(error)))
+        .delete(`/contacts/${contactId}`)
+        .then(() => dispatch(deleteContactSuccess(contactId)))
+        .catch(error => dispatch(deleteContactError(error.message)))
 }
 
 

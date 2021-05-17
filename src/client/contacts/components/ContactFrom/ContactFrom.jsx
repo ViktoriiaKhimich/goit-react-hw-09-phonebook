@@ -2,7 +2,7 @@ import { Component } from 'react';
 import { connect } from 'react-redux'
 import { getContacts } from '../../redux/selectors'
 import operations from '../../redux/operations'
-import FormInput from '../../shared/components/FormInput'
+import FormInput from '../../../../shared/components/FormInput'
 import { fields } from './fields';
 import { v4 } from 'uuid'
 
