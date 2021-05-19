@@ -5,7 +5,6 @@ import selectors from '../../authorisation/redux/auth/selectors'
 import styles from './NavbarNav.module.css'
 
 const NavbarNav = ({ isLogined }) => {
-
     return (
         <nav>
             <ul className={styles.pageNav}>

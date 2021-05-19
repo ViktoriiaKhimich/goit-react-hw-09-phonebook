@@ -1,58 +1,48 @@
-import React, { Component } from 'react';
+import React, { useState, useCallback } from 'react';
+import { useDispatch } from 'react-redux'
 import { fields } from './fields'
+import { initialState } from './initialState'
 import FormInput from '../../../../shared/components/FormInput'
 import Button from '../../../../shared/components/Button'
-import { connect } from 'react-redux'
 import operations from '../../redux/auth/operations'
 
 import styles from './LoginForm.module.css'
 
-class LoginForm extends Component {
-    state = {
-        email: '',
-        password: ''
-    }
+const LoginForm = () => {
 
-    handleChange = (e) => {
+    const [formData, setFormData] = useState(initialState);
+
+    const dispatch = useDispatch();
+
+    const handleChange = (e) => {
         const { name, value } = e.target;
-        this.setState({
-            [name]: value,
-        })
+        setFormData({ ...formData, [name]: value })
     }
 
-    handleSubmit = (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
-        this.props.onLogin(this.state)
-        this.reset()
+        dispatch(operations.login(formData))
+        reset()
     }
 
-    reset() {
-        this.setState({
-            email: '',
-            password: '',
-        })
+    const reset = () => {
+        setFormData(initialState)
     }
-    render() {
-        const { email, password } = this.state;
-        console.log(email, password);
-        const { handleChange, handleSubmit } = this;
-        return (
-            <>
-                <form className={styles.form} onSubmit={handleSubmit}>
-                    <div className={styles.formInput}>
-                        <label htmlFor="">Email</label>
-                        <FormInput className={styles.formField} value={email} {...fields.email} onChange={handleChange} />
-                        <label htmlFor="">Password</label>
-                        <FormInput className={styles.formField} value={password} {...fields.password} onChange={handleChange} />
-                    </div>
-                    <Button>Log in</Button>
-                </form>
-            </>
-        );
-    }
+
+    return (
+        <>
+            <form className={styles.form} onSubmit={handleSubmit}>
+                <div className={styles.formInput}>
+                    <label htmlFor="">Email</label>
+                    <FormInput className={styles.formField} value={formData.email} {...fields.email} onChange={handleChange} />
+                    <label htmlFor="">Password</label>
+                    <FormInput className={styles.formField} value={formData.password} {...fields.password} onChange={handleChange} />
+                </div>
+                <Button>Log in</Button>
+            </form>
+        </>
+    );
+
 }
 
-const mapDispatchToProps = dispatch => ({
-    onLogin: (data) => dispatch(operations.login(data))
-})
-export default connect(null, mapDispatchToProps)(LoginForm);
+export default LoginForm;

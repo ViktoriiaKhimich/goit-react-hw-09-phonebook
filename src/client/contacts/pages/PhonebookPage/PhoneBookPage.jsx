@@ -1,38 +1,34 @@
-import React, { Component } from 'react'
-import { connect } from 'react-redux'
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch, shallowEqual } from 'react-redux'
 import ContactForm from '../../components/ContactFrom'
 import Filter from '../../components/Filter';
 import ContactList from '../../components/ContactList'
 import operations from '../../redux/operations'
 import { loading } from '../../redux/selectors'
 
-class PhonebookPage extends Component {
+const PhonebookPage = () => {
 
-    componentDidMount() {
-        this.props.fetchContacts()
-    }
+    const loadingContacts = useSelector(state => loading(state), shallowEqual)
+    const dispatch = useDispatch()
 
-    render() {
-        return (
-            <div>
-                <h1>Phonebook</h1>
-                <ContactForm />
+    useEffect(() => {
+        dispatch(operations.fetchContacts())
+    }, [])
 
-                <h2>Contacts</h2>
-                <Filter />
 
-                {this.props.loading && <h1>...Loading</h1>}
-                <ContactList />
-            </div>
-        )
-    }
+    return (
+        <div>
+            <h1>Phonebook</h1>
+            <ContactForm />
+
+            <h2>Contacts</h2>
+            <Filter />
+
+            {loadingContacts && <h1>...Loading</h1>}
+            <ContactList />
+        </div>
+    )
+
 }
 
-const mapStateToPtops = state => ({
-    loading: loading(state)
-})
-const mapDispatchToProps = dispatch => ({
-    fetchContacts: () => dispatch(operations.fetchContacts())
-})
-
-export default connect(mapStateToPtops, mapDispatchToProps)(PhonebookPage);
+export default PhonebookPage;

@@ -1,76 +1,60 @@
-import { Component } from 'react';
-import { connect } from 'react-redux'
-import { getContacts } from '../../redux/selectors'
+import { useState } from 'react'
+import { useDispatch, useSelector, shallowEqual } from 'react-redux'
 import operations from '../../redux/operations'
 import FormInput from '../../../../shared/components/FormInput'
 import { fields } from './fields';
+import { initialState } from './initialState'
 import { v4 } from 'uuid'
 
 import styles from './ContactFrom.module.css'
 
-class ContactFrom extends Component {
+const ContactFrom = () => {
 
-    state = {
-        name: "",
-        number: "",
-    }
+    const [formData, setFormData] = useState(initialState)
 
-    handleChange = (e) => {
+    const dispatch = useDispatch();
+
+    const handleChange = (e) => {
         const { name, value } = e.target;
-        this.setState({
-            [name]: value,
-        })
+        setFormData({ ...formData, [name]: value })
     }
 
-    handleSubmit = (e) => {
+    const contacts = useSelector(({ phonebook }) => phonebook.contacts, shallowEqual)
+
+    const handleSubmit = (e) => {
         e.preventDefault();
-        const { name, number } = this.state;
-        const contact = this.props.contacts.find(item => item.name === name || item.number === number)
+        const { name, number } = formData;
+        const contact = contacts.find(item => item.name === name || item.number === number)
         if (!contact) {
-            this.props.onSubmit(name, number)
-            this.reset()
+            dispatch(operations.addContact(name, number))
+            reset()
             return
         }
         alert(`${name} is already in contacts`)
-        this.reset()
+        reset()
 
     }
 
-    reset = () => {
-        this.setState({
-            name: '',
-            number: '',
-        })
+    const reset = () => {
+        setFormData(initialState)
     }
 
-    render() {
-        const nameFieldId = v4();
-        const numberFieldId = v4();
-        const { name, number } = this.state;
-        const { handleChange, handleSubmit } = this;
-        return (
-            <>
-                <form className={styles.form} onSubmit={handleSubmit}>
-                    <div className={styles.formInput}>
-                        <label htmlFor={nameFieldId}>Name</label>
-                        <FormInput onChange={handleChange} {...fields.name} value={name} className={styles.formField} />
-                        <label htmlFor={numberFieldId}>Number</label>
-                        <FormInput onChange={handleChange} {...fields.number} value={number} className={styles.formField} />
-                    </div>
-                    <button type="submit">Add contact</button>
-                </form>
-            </>
-        )
-    }
+    const nameFieldId = v4();
+    const numberFieldId = v4();
+
+    return (
+        <>
+            <form className={styles.form} onSubmit={handleSubmit}>
+                <div className={styles.formInput}>
+                    <label htmlFor={nameFieldId}>Name</label>
+                    <FormInput onChange={handleChange} {...fields.name} value={formData.name} className={styles.formField} />
+                    <label htmlFor={numberFieldId}>Number</label>
+                    <FormInput onChange={handleChange} {...fields.number} value={formData.number} className={styles.formField} />
+                </div>
+                <button type="submit">Add contact</button>
+            </form>
+        </>
+    )
 }
 
-
-const mapStateToProps = state => ({
-    contacts: getContacts(state),
-})
-
-const mapDispatchToProps = dispatch => ({
-    onSubmit: (name, number) => dispatch(operations.addContact(name, number)),
-})
-
-export default connect(mapStateToProps, mapDispatchToProps)(ContactFrom);
+export default ContactFrom;

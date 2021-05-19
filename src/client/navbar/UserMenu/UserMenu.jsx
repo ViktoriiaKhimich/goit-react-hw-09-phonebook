@@ -1,6 +1,5 @@
 import React from 'react'
 import { connect } from 'react-redux'
-// import Button from '../../../shared/components/Button'
 import selectors from '../../authorisation/redux/auth/selectors'
 import operations from '../../authorisation/redux/auth/operations'
 import avatar from './panda.png'

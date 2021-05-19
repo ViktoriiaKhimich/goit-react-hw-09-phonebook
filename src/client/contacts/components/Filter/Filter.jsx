@@ -1,15 +1,18 @@
 import React from 'react';
+import { useSelector, useDispatch, shallowEqual } from 'react-redux'
 import { v4 } from 'uuid';
-import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
 import actions from '../../redux/actions'
-import { getFilter } from '../../redux/selectors'
 
 import styles from './Filter.module.css'
 
-const Filter = ({ filter, onChange }) => {
+const Filter = () => {
+
+    const filter = useSelector(({ phonebook }) => phonebook.filter, shallowEqual);
+    const dispatch = useDispatch()
 
     const filterFieldId = v4();
+
     return (
         <div className={styles.inputField}>
             <label htmlFor={filterFieldId}>Find contacts by name</label>
@@ -18,19 +21,12 @@ const Filter = ({ filter, onChange }) => {
                 id={filterFieldId}
                 type="text"
                 value={filter}
-                onChange={onChange}
+                onChange={(e) => dispatch(actions.filterContacts(e.target.value))}
             />
         </div>
     );
 }
 
-const mapStateToProps = state => ({
-    filter: getFilter(state),
-})
-
-const mapDispatchToProps = dispatch => ({
-    onChange: (e) => dispatch(actions.filterContacts(e.target.value))
-})
 
 Filter.defaultProps = {
     filter: '',
@@ -42,4 +38,4 @@ Filter.propTypes = {
     onChange: PropTypes.func,
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Filter);
+export default Filter;
